@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cluster App Seasons Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one vertical timeline, phases as bands, each post a row with dates/hours on the left and its components as status chips on the right. */
+:root{
+  --bg:#f6f5f2; --panel:#ffffff; --ink:#1f2420; --muted:#5d645e; --line:#dcdcd4;
+  --accent:#7b2d3b; --accent-soft:#f3e4e6;
+  --ok:#2f7d32; --ok-bg:#e6f3e4; --ok-line:#9ccc96;
+  --wip:#8a6400; --wip-bg:#fbf1d3; --wip-line:#e5c766;
+  --new:#b3261e; --new-bg:#fbe5e3; --new-line:#eea59f;
+  --fall:#b4520f; --fall-bg:#fdf1e3; --fall-line:#f0c48f; --fall-2:#e8a32a;
+  --winter:#2e2f7a; --winter-bg:#ecf4fb; --winter-line:#b9d3ec; --winter-dot:rgba(46,47,122,.16);
+  --spring:#3f8a34; --spring-bg:#eff8ea; --spring-line:#bfe0b0; --spring-pink:#f6dbe7; --spring-lilac:#e6def7;
+  --dusk:#5b3f9e; --dusk-a:#efe6fb; --dusk-b:#fbe3ee; --dusk-c:#fde8d9; --dusk-ink:#3d2a6b;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141714; --panel:#1c201d; --ink:#e9ebe6; --muted:#a3aaa3; --line:#323832;
+    --accent:#e39aa6; --accent-soft:#3a2328;
+    --ok:#8fd18a; --ok-bg:#1d2e1c; --ok-line:#3f6b3b;
+    --wip:#f0cf6b; --wip-bg:#33290f; --wip-line:#6e5a1c;
+    --new:#f4978f; --new-bg:#3a1c1a; --new-line:#7a3530;
+    --fall:#f2a65a; --fall-bg:#2b1d10; --fall-line:#6b4317; --fall-2:#f0c25a;
+    --winter:#b9c3ff; --winter-bg:#151d2b; --winter-line:#34466a; --winter-dot:rgba(185,195,255,.14);
+    --spring:#9ed78f; --spring-bg:#17251a; --spring-line:#365e33; --spring-pink:#4a2a39; --spring-lilac:#352c4d;
+    --dusk:#c4a8ff; --dusk-a:#2a2140; --dusk-b:#3a2235; --dusk-c:#3b2a22; --dusk-ink:#e6dcff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141714; --panel:#1c201d; --ink:#e9ebe6; --muted:#a3aaa3; --line:#323832;
+  --accent:#e39aa6; --accent-soft:#3a2328;
+  --ok:#8fd18a; --ok-bg:#1d2e1c; --ok-line:#3f6b3b;
+  --wip:#f0cf6b; --wip-bg:#33290f; --wip-line:#6e5a1c;
+  --new:#f4978f; --new-bg:#3a1c1a; --new-line:#7a3530;
+  --fall:#f2a65a; --fall-bg:#2b1d10; --fall-line:#6b4317; --fall-2:#f0c25a;
+  --winter:#b9c3ff; --winter-bg:#151d2b; --winter-line:#34466a; --winter-dot:rgba(185,195,255,.14);
+  --spring:#9ed78f; --spring-bg:#17251a; --spring-line:#365e33; --spring-pink:#4a2a39; --spring-lilac:#352c4d;
+  --dusk:#c4a8ff; --dusk-a:#2a2140; --dusk-b:#3a2235; --dusk-c:#3b2a22; --dusk-ink:#e6dcff;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 64px;display:grid;gap:28px}
+h1,h2,h3{font-family:var(--display);font-weight:700;text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4vw,40px)}
+h2{font-size:22px}
+h3{font-size:18px;font-weight:500}
+.sub{color:var(--muted);max-width:68ch;margin:8px 0 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-family:var(--display);font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .s{font-size:13px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.legend .lbl{font-size:14px;color:var(--muted);margin-right:4px}
+button.f{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+button.f[aria-pressed="true"]{border-color:var(--ink)}
+button.f:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.prereq{background:linear-gradient(110deg,var(--dusk-a) 0%,var(--dusk-b) 60%,var(--dusk-c) 100%);border:1px solid var(--line);border-left:4px solid var(--dusk);border-radius:0 10px 10px 0;padding:16px 18px;color:var(--dusk-ink)}
+.prereq h3{color:var(--dusk)}
+.prereq ul{margin:8px 0 0;padding-left:20px;display:grid;gap:6px}
+.phase{display:grid;gap:12px}
+.phase-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:6px}
+.phase-head .meta{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.post{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.when{display:grid;gap:4px;align-content:start;font-variant-numeric:tabular-nums}
+.part{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500}
+.pub{font-weight:600}
+.small{font-size:13px;color:var(--muted)}
+.hrs{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden;min-width:40px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.what{display:grid;gap:10px}
+.why{color:var(--muted);margin:0;max-width:72ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:14px;border-radius:6px;padding:3px 9px;border:1px solid;transition:opacity .15s}
+.chip .ic{font-family:var(--mono);font-weight:500;font-size:13px;width:12px;text-align:center}
+.ok{color:var(--ok);background:var(--ok-bg);border-color:var(--ok-line)}
+.wip{color:var(--wip);background:var(--wip-bg);border-color:var(--wip-line)}
+.new{color:var(--new);background:var(--new-bg);border-color:var(--new-line)}
+.dim .chip:not(.on){opacity:.22}
+.buffer{border:1px dashed var(--line);border-radius:10px;padding:12px 18px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.cum{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.season{display:grid;gap:6px;padding:18px 0 4px;border-top:4px solid var(--accent)}
+.season h2{font-size:26px}
+.prog-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.prog-head .meta{font-size:14px;color:var(--muted)}
+.prow{display:grid;grid-template-columns:120px minmax(0,1fr) 64px;align-items:center;gap:12px;margin:6px 0}
+.plabel{font-size:14px;font-weight:600}
+.pnum{font-family:var(--mono);font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.pbar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line)}
+.pbar i{display:block;height:100%;border:0}
+.pbar i.ok{background:var(--ok)}.pbar i.wip{background:var(--wip)}.pbar i.new{background:var(--new)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;align-items:start}
+.scol{display:grid;gap:6px;transition:opacity .15s}
+.shead{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.srow{background:var(--panel);border:1px solid var(--line);border-left-width:4px;border-radius:0 8px 8px 0;padding:8px 12px;display:grid;gap:2px}
+.ok-stripe{border-left-color:var(--ok)}.wip-stripe{border-left-color:var(--wip)}.new-stripe{border-left-color:var(--new)}
+.sname{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;flex-wrap:wrap}
+.sname .ic{font-family:var(--mono);width:12px;text-align:center}
+.tag{font-size:11px;font-weight:400;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:0 7px;margin-left:auto}
+.lands{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.land{font-family:var(--mono);font-size:12px;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.land:hover{border-color:var(--accent);color:var(--accent)}
+.land:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#status.dim .scol:not(.on){opacity:.25}
+.sw{border-radius:14px;padding:22px 22px 26px;display:grid;gap:24px;border:1px solid var(--sw-line);background:var(--sw-bg)}
+.sw .season{border-top:0;padding-top:0}
+.sw .season h2,.sw .part,.sw .phase-head h3{color:var(--sw)}
+.sw .phase-head{border-bottom-color:var(--sw)}
+.sw .bar i{background:var(--sw)}
+.sw .post{border-color:var(--sw-line)}
+.sw-fall{--sw:var(--fall);--sw-bg:var(--fall-bg);--sw-line:var(--fall-line);background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22260%22%20height%3D%22240%22%3E%3Cg%20transform%3D%22translate%2840%20190%29%20scale%281%29%22%20fill-opacity%3D%22.32%22%3E%3Cellipse%20cx%3D%22-7%22%20cy%3D%220%22%20rx%3D%228%22%20ry%3D%2210%22%20fill%3D%22%23e07a24%22/%3E%3Cellipse%20cx%3D%227%22%20cy%3D%220%22%20rx%3D%228%22%20ry%3D%2210%22%20fill%3D%22%23e07a24%22/%3E%3Cellipse%20cx%3D%220%22%20cy%3D%220%22%20rx%3D%228%22%20ry%3D%2211%22%20fill%3D%22%23ef8f33%22/%3E%3Crect%20x%3D%22-1.5%22%20y%3D%22-15%22%20width%3D%223%22%20height%3D%226%22%20rx%3D%221%22%20fill%3D%22%236b5a23%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28215%2060%29%20scale%280.8%29%22%20fill-opacity%3D%22.32%22%3E%3Cellipse%20cx%3D%22-7%22%20cy%3D%220%22%20rx%3D%228%22%20ry%3D%2210%22%20fill%3D%22%23e07a24%22/%3E%3Cellipse%20cx%3D%227%22%20cy%3D%220%22%20rx%3D%228%22%20ry%3D%2210%22%20fill%3D%22%23e07a24%22/%3E%3Cellipse%20cx%3D%220%22%20cy%3D%220%22%20rx%3D%228%22%20ry%3D%2211%22%20fill%3D%22%23ef8f33%22/%3E%3Crect%20x%3D%22-1.5%22%20y%3D%22-15%22%20width%3D%223%22%20height%3D%226%22%20rx%3D%221%22%20fill%3D%22%236b5a23%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28120%2040%29%20rotate%2830%29%22%20fill-opacity%3D%22.34%22%3E%3Cpath%20d%3D%22M0%20-12%20C9%20-5%209%206%200%2013%20C-9%206%20-9%20-5%200%20-12%20Z%22%20fill%3D%22%23c9541c%22/%3E%3Cpath%20d%3D%22M0%20-10%20L0%2016%22%20stroke%3D%22%23c9541c%22%20stroke-opacity%3D%22.5%22%20stroke-width%3D%221%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%2830%2070%29%20rotate%28-40%29%22%20fill-opacity%3D%22.34%22%3E%3Cpath%20d%3D%22M0%20-12%20C9%20-5%209%206%200%2013%20C-9%206%20-9%20-5%200%20-12%20Z%22%20fill%3D%22%23d4a12a%22/%3E%3Cpath%20d%3D%22M0%20-10%20L0%2016%22%20stroke%3D%22%23d4a12a%22%20stroke-opacity%3D%22.5%22%20stroke-width%3D%221%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28180%20150%29%20rotate%2870%29%22%20fill-opacity%3D%22.34%22%3E%3Cpath%20d%3D%22M0%20-12%20C9%20-5%209%206%200%2013%20C-9%206%20-9%20-5%200%20-12%20Z%22%20fill%3D%22%23a8441c%22/%3E%3Cpath%20d%3D%22M0%20-10%20L0%2016%22%20stroke%3D%22%23a8441c%22%20stroke-opacity%3D%22.5%22%20stroke-width%3D%221%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%2895%20140%29%20rotate%28-15%29%22%20fill-opacity%3D%22.34%22%3E%3Cpath%20d%3D%22M0%20-12%20C9%20-5%209%206%200%2013%20C-9%206%20-9%20-5%200%20-12%20Z%22%20fill%3D%22%23e08a2e%22/%3E%3Cpath%20d%3D%22M0%20-10%20L0%2016%22%20stroke%3D%22%23e08a2e%22%20stroke-opacity%3D%22.5%22%20stroke-width%3D%221%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28235%20210%29%20rotate%2820%29%22%20fill-opacity%3D%22.34%22%3E%3Cpath%20d%3D%22M0%20-12%20C9%20-5%209%206%200%2013%20C-9%206%20-9%20-5%200%20-12%20Z%22%20fill%3D%22%23c9541c%22/%3E%3Cpath%20d%3D%22M0%20-10%20L0%2016%22%20stroke%3D%22%23c9541c%22%20stroke-opacity%3D%22.5%22%20stroke-width%3D%221%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28150%20225%29%20rotate%28-60%29%22%20fill-opacity%3D%22.34%22%3E%3Cpath%20d%3D%22M0%20-12%20C9%20-5%209%206%200%2013%20C-9%206%20-9%20-5%200%20-12%20Z%22%20fill%3D%22%23d4a12a%22/%3E%3Cpath%20d%3D%22M0%20-10%20L0%2016%22%20stroke%3D%22%23d4a12a%22%20stroke-opacity%3D%22.5%22%20stroke-width%3D%221%22/%3E%3C/g%3E%3C/svg%3E");background-size:260px 240px}
+.sw-fall .post{border-top:3px solid var(--fall-2)}
+.sw-winter{--sw:var(--winter);--sw-bg:var(--winter-bg);--sw-line:var(--winter-line);
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22260%22%20height%3D%22240%22%3E%3Cg%20transform%3D%22translate%2840%20190%29%20rotate%280%29%22%20stroke%3D%22%234b57a8%22%20stroke-opacity%3D%220.34%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cg%20transform%3D%22rotate%280%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-13%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%223.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%22-3.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%2860%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-13%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%223.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%22-3.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28120%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-13%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%223.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%22-3.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28180%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-13%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%223.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%22-3.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28240%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-13%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%223.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%22-3.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28300%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-13%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%223.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-7.15%22%20x2%3D%22-3.6400000000000006%22%20y2%3D%22-10.4%22/%3E%3C/g%3E%3C/g%3E%3Cg%20transform%3D%22translate%28215%2060%29%20rotate%2815%29%22%20stroke%3D%22%234b57a8%22%20stroke-opacity%3D%220.3%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cg%20transform%3D%22rotate%280%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-11%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%223.08%22%20y2%3D%22-8.8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%22-3.08%22%20y2%3D%22-8.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%2860%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-11%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%223.08%22%20y2%3D%22-8.8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%22-3.08%22%20y2%3D%22-8.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28120%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-11%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%223.08%22%20y2%3D%22-8.8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%22-3.08%22%20y2%3D%22-8.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28180%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-11%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%223.08%22%20y2%3D%22-8.8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%22-3.08%22%20y2%3D%22-8.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28240%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-11%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%223.08%22%20y2%3D%22-8.8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%22-3.08%22%20y2%3D%22-8.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28300%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-11%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%223.08%22%20y2%3D%22-8.8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.050000000000001%22%20x2%3D%22-3.08%22%20y2%3D%22-8.8%22/%3E%3C/g%3E%3C/g%3E%3Cg%20transform%3D%22translate%28120%2040%29%20rotate%288%29%22%20stroke%3D%22%234b57a8%22%20stroke-opacity%3D%220.32%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cg%20transform%3D%22rotate%280%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%2860%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28120%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28180%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28240%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28300%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3C/g%3E%3Cg%20transform%3D%22translate%2835%2070%29%20rotate%280%29%22%20stroke%3D%22%234b57a8%22%20stroke-opacity%3D%220.3%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cg%20transform%3D%22rotate%280%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%2860%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28120%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28180%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28240%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28300%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3C/g%3E%3Cg%20transform%3D%22translate%28180%20150%29%20rotate%2820%29%22%20stroke%3D%22%234b57a8%22%20stroke-opacity%3D%220.28%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cg%20transform%3D%22rotate%280%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-12%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%223.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%22-3.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%2860%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-12%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%223.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%22-3.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28120%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-12%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%223.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%22-3.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28180%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-12%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%223.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%22-3.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28240%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-12%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%223.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%22-3.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28300%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-12%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%223.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-6.6000000000000005%22%20x2%3D%22-3.3600000000000003%22%20y2%3D%22-9.600000000000001%22/%3E%3C/g%3E%3C/g%3E%3Cg%20transform%3D%22translate%2895%20140%29%20rotate%285%29%22%20stroke%3D%22%234b57a8%22%20stroke-opacity%3D%220.32%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cg%20transform%3D%22rotate%280%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%2860%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28120%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28180%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28240%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28300%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-8%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%222.24%22%20y2%3D%22-6.4%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.4%22%20x2%3D%22-2.24%22%20y2%3D%22-6.4%22/%3E%3C/g%3E%3C/g%3E%3Cg%20transform%3D%22translate%28235%20210%29%20rotate%280%29%22%20stroke%3D%22%234b57a8%22%20stroke-opacity%3D%220.3%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cg%20transform%3D%22rotate%280%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%2860%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28120%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28180%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28240%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28300%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-9%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%222.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-4.95%22%20x2%3D%22-2.5200000000000005%22%20y2%3D%22-7.2%22/%3E%3C/g%3E%3C/g%3E%3Cg%20transform%3D%22translate%28150%20225%29%20rotate%280%29%22%20stroke%3D%22%234b57a8%22%20stroke-opacity%3D%220.28%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cg%20transform%3D%22rotate%280%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-7%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%221.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%22-1.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%2860%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-7%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%221.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%22-1.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28120%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-7%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%221.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%22-1.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28180%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-7%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%221.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%22-1.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28240%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-7%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%221.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%22-1.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3C/g%3E%3Cg%20transform%3D%22rotate%28300%29%22%3E%3Cline%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22-7%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%221.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3Cline%20x1%3D%220%22%20y1%3D%22-3.8500000000000005%22%20x2%3D%22-1.9600000000000002%22%20y2%3D%22-5.6000000000000005%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),radial-gradient(var(--winter-dot) 1.4px,transparent 1.6px),radial-gradient(var(--winter-dot) 1px,transparent 1.2px);
+  background-size:260px 240px,26px 26px,17px 17px;background-position:0 0,0 0,9px 11px}
+.sw-winter .post{border-top:3px solid var(--winter)}
+.sw-spring{--sw:var(--spring);--sw-bg:var(--spring-bg);--sw-line:var(--spring-line);background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22250%22%20height%3D%22230%22%3E%3Cg%20transform%3D%22translate%2835%2045%29%20scale%281%29%22%3E%3Cg%20fill%3D%22%23f2a7c3%22%20fill-opacity%3D%22.55%22%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%280%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%2872%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28144%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28216%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28288%29%22/%3E%3C/g%3E%3Ccircle%20r%3D%223%22%20fill%3D%22%23f2c94c%22%20fill-opacity%3D%22.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28190%2035%29%20scale%280.8%29%22%3E%3Cg%20fill%3D%22%23c7b3ef%22%20fill-opacity%3D%22.55%22%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%280%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%2872%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28144%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28216%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28288%29%22/%3E%3C/g%3E%3Ccircle%20r%3D%223%22%20fill%3D%22%23f2c94c%22%20fill-opacity%3D%22.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28120%20125%29%20scale%281.1%29%22%3E%3Cg%20fill%3D%22%239fd6f0%22%20fill-opacity%3D%22.55%22%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%280%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%2872%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28144%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28216%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28288%29%22/%3E%3C/g%3E%3Ccircle%20r%3D%223%22%20fill%3D%22%23f2c94c%22%20fill-opacity%3D%22.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28220%20175%29%20scale%280.9%29%22%3E%3Cg%20fill%3D%22%23f2a7c3%22%20fill-opacity%3D%22.55%22%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%280%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%2872%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28144%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28216%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28288%29%22/%3E%3C/g%3E%3Ccircle%20r%3D%223%22%20fill%3D%22%23f2c94c%22%20fill-opacity%3D%22.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%2855%20190%29%20scale%281%29%22%3E%3Cg%20fill%3D%22%23c7b3ef%22%20fill-opacity%3D%22.55%22%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%280%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%2872%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28144%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28216%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28288%29%22/%3E%3C/g%3E%3Ccircle%20r%3D%223%22%20fill%3D%22%23f2c94c%22%20fill-opacity%3D%22.8%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28150%20215%29%20scale%280.7%29%22%3E%3Cg%20fill%3D%22%23f7c59f%22%20fill-opacity%3D%22.55%22%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%280%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%2872%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28144%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28216%29%22/%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%224.5%22%20transform%3D%22rotate%28288%29%22/%3E%3C/g%3E%3Ccircle%20r%3D%223%22%20fill%3D%22%23f2c94c%22%20fill-opacity%3D%22.8%22/%3E%3C/g%3E%3C/svg%3E");background-size:340px 313px}
+.sw-spring .post{border-top:3px solid var(--spring)}
+.sw-spring .season{background:linear-gradient(90deg,var(--spring-pink),var(--spring-lilac));border-radius:10px;padding:14px 16px}
+.sw .buffer{background:var(--panel)}
+.land.fall{background:var(--fall-bg);border-color:var(--fall-line);color:var(--fall)}
+.land.winter{background-color:var(--winter-bg);border-color:var(--winter-line);color:var(--winter);
+  background-image:radial-gradient(var(--winter-dot) 1px,transparent 1.2px);background-size:7px 7px}
+.land.spring{background:var(--spring-bg);border-color:var(--spring-line);color:var(--spring)}
+.plabel.fall{color:var(--fall)}.plabel.winter{color:var(--winter)}.plabel.spring{color:var(--spring)}
+.sbar{display:flex;height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:2px 0}
+.sbar i{display:block;height:100%}
+.sbar .prev{background:var(--sw,var(--accent));opacity:.35}
+.sbar .cur{background:var(--sw,var(--accent))}
+.sbar.mini{width:90px;flex:none}
+.key{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.cat{display:flex;align-items:baseline;gap:8px;margin:10px 0 2px;font-size:13px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:3px}
+.cat .n{font-weight:400;font-family:var(--mono);font-size:12px}
+.ord{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;min-width:30px;text-align:center}
+.viewtog{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-left:auto}
+.viewtog button{font:inherit;font-size:13px;border:0;background:var(--panel);color:var(--muted);padding:4px 12px;cursor:pointer}
+.viewtog button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.viewtog button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.sw-fall .season,.sw-winter .season,.sw .phase-head{background:color-mix(in srgb,var(--sw-bg) 88%,transparent);border-radius:10px;padding:12px 16px}
+.sw .phase-head{border-radius:8px 8px 0 0;padding:8px 12px}
+.tg{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:4px 0 2px;max-width:78ch}
+.tg dt{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.04em;color:var(--sw,var(--muted));border:1px solid var(--sw-line,var(--line));border-radius:4px;padding:1px 7px;align-self:start;margin-top:3px;text-transform:uppercase}
+.tg dd{margin:0;color:var(--ink)}
+.foot{color:var(--muted);font-size:14px;max-width:72ch}
+@media (max-width:640px){.post{grid-template-columns:1fr;gap:10px}}
+@media (prefers-reduced-motion:reduce){.chip{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Cluster App: Fall, Winter and Spring</h1>
+    <p class="sub">Three blog seasons that build and then grow a photo-checking chore app on top of my EKS + GitOps home lab. Fall builds the minimum viable product. Winter makes it reliable under pressure. Spring makes it smarter, opens it to more people and measures what it costs. Each season starts by changing the chores through Git and ends by comparing itself to the seasons before.</p>
+  </header>
+
+  <section class="tiles" aria-label="Series summary">
+    <div class="tile"><div class="k">Fall: build it</div><div class="v" id="h-fall">0 h</div><div class="s">11 posts · Nov 16 to Feb 21</div></div>
+    <div class="tile"><div class="k">Winter: weather the storm</div><div class="v" id="h-winter">0 h</div><div class="s">7 posts · Mar 1 to Apr 18</div></div>
+    <div class="tile"><div class="k">Spring: grow it</div><div class="v" id="h-spring">0 h</div><div class="s">5 posts · May 3 to Jun 6</div></div>
+    <div class="tile"><div class="k">Whole story</div><div class="v" id="totalHrs">0 h</div><div class="s">23 posts · Nov 2026 to Jun 2027</div></div>
+  </section>
+
+  <section class="legend" aria-label="Filter by status">
+    <span class="lbl">Highlight:</span>
+    <button class="f" id="f-all" aria-pressed="true" data-f="all">All</button>
+    <button class="f" aria-pressed="false" data-f="ok"><span class="chip ok" style="padding:0 6px"><span class="ic">✓</span></span>Done</button>
+    <button class="f" aria-pressed="false" data-f="wip"><span class="chip wip" style="padding:0 6px"><span class="ic">~</span></span>In progress</button>
+    <button class="f" aria-pressed="false" data-f="new"><span class="chip new" style="padding:0 6px"><span class="ic">✗</span></span>Need to add</button>
+  </section>
+
+  <section class="prereq">
+    <h3>Before Fall Cleaning #0 (this week)</h3>
+    <ul>
+      <li>Merge the pending <span style="font-family:var(--mono);font-size:14px">say_when_infra</span> and <span style="font-family:var(--mono);font-size:14px">say_when_git_ops</span> patches. EKS 1.31 leaves extended support on Nov 26, 2026, so the cluster should be on 1.35 first.</li>
+      <li>Take the photos now while the leaves are still down: a good and a "wrong" shot for each of the 10 chores. They become the test set for every later part.</li>
+      <li>Photograph every snowfall from December through February: shoveled, unshoveled, salted, and a few wrong shots. Winter is built from these.</li>
+      <li>Start registering a phone number for texts with AWS during the winter. Approval can take weeks, and Winter #5 needs it.</li>
+    </ul>
+  </section>
+
+  <section id="progress"></section>
+
+  <section id="status"></section>
+
+  <div id="timeline" style="display:grid;gap:28px"></div>
+
+  <p class="foot">Hours include building, debugging and writing each post. Dates assume about 8 hours a week on evenings and weekends, with Thanksgiving and the holidays as lighter weeks. Some components show up twice on purpose, for example kube-bench as a "before" snapshot in Fall #0 and an "after" in the Fall finale, or texts arriving in Winter after email in Fall. That repetition is the progression story.</p>
+</main>
+
+<script>
+const PHASES=[
+ {season:"Fall Cleaning: Build It",note:{theme:"The minimum viable product.",goal:"Assign 10 chores by email, take photos in, judge them with Rekognition and show a green/red board, all shipped through GitOps on a locked-down cluster."},key:"fall"},
+ {name:"Phase 1: Foundation",sub:"Ship a signed app the GitOps way, then lock it down",key:"fall",posts:[
+  {n:0,s:"Fall",t:"The Game Plan (Baseline, Budget & Roadmap)",work:"Nov 16 – Nov 22",pub:"Sun, Nov 22",h:5,
+   why:"Start with the plan, a security and health baseline for before-and-after comparisons, and a budget alert before anything starts costing money.",
+   items:[["kube-bench baseline","wip"],["Popeye baseline","wip"],["Budgets + Cost Anomaly Detection","new"],["EKS cluster","ok"],["HCP Terraform + OIDC","ok"]]},
+  {n:1,s:"Fall",t:"Rakes & Repos (CI, ECR & Signed Images)",work:"Nov 23 – Dec 6",pub:"Sun, Dec 6",h:10,
+   why:"Create the say_when_app repo and an app skeleton, then a CI pipeline that builds, scans, signs and pushes it to ECR. Two weeks because of Thanksgiving.",
+   items:[["Fall cleanup app (skeleton)","new"],["ECR + build script","wip"],["GitHub Actions CI","wip"]]},
+  {n:2,s:"Fall",t:"Leaf It to GitOps (Argo CD & Envoy Gateway)",work:"Dec 7 – Dec 13",pub:"Sun, Dec 13",h:8,
+   why:"Deploy the app through its own Argo CD project and route to it with an HTTPRoute. First time the app runs in the cluster.",
+   items:[["Argo CD","wip"],["Envoy Gateway (routes)","wip"],["gp3 storage + namespaces","ok"]]},
+  {n:3,s:"Fall",t:"Locking the Shed (Kyverno, Network Policies & Secrets)",work:"Dec 14 – Dec 20",pub:"Sun, Dec 20",h:8,
+   why:"Before the app touches AWS: signed images only, default-deny networking, and settings pulled from Secrets Manager with Pod Identity.",
+   items:[["Kyverno signed-image policy","wip"],["Network policies","wip"],["External Secrets","wip"],["Pod Identity","wip"],["Secrets Manager","wip"]]}
+ ]},
+ {buffer:"Holiday break: Dec 21 – Jan 3.",key:"fall"},
+ {name:"Phase 2: Open the Front Door and Get Photos In",sub:"Make it reachable, then accept and judge photos",key:"fall",posts:[
+  {n:4,s:"Fall",t:"Open the Front Door (Route 53, ACM & NLB)",work:"Jan 4 – Jan 10",pub:"Sun, Jan 10",h:10,
+   why:"Give phones a real HTTPS address. Each emailed link carries a signed, expiring token for one chore, so the MVP is protected without a full login system.",
+   items:[["Route 53 + ACM","new"],["Load Balancer Controller + NLB","new"],["Envoy Gateway (HTTPS, rate limit)","wip"]]},
+  {n:5,s:"Fall",t:"Photos In (S3 & SQS)",work:"Jan 11 – Jan 17",pub:"Sun, Jan 17",h:8,
+   why:"The upload page sends photos straight to S3, and each one drops a message on a queue with a dead-letter queue for retries.",
+   items:[["S3 photos bucket","new"],["SQS + dead-letter queue","new"],["VPC + S3 gateway endpoint","ok"]]},
+  {n:6,s:"Fall",t:"Rake or Basketball? (Rekognition & DynamoDB)",work:"Jan 18 – Jan 24",pub:"Sun, Jan 24",h:10,
+   why:"The checker reads the queue, asks Rekognition what's in the photo, applies the pass/fail rules from Git and saves the verdict.",
+   items:[["Rekognition","new"],["DynamoDB","new"],["Fall cleanup app (checker)","new"]]}
+ ]},
+ {name:"Phase 3: See It and Send It",sub:"Watch every photo, then send the chores out",key:"fall",posts:[
+  {n:7,s:"Fall",t:"Green or Red (Prometheus, Thanos & Grafana)",work:"Jan 25 – Jan 31",pub:"Sun, Jan 31",h:8,
+   why:"Pass/fail metrics from the app and the 10-tile green/red board. Thanos keeps the history so Spring can compare against Fall.",
+   items:[["Prometheus (app metrics)","wip"],["Grafana board","wip"],["Thanos","ok"]]},
+  {n:8,s:"Fall",t:"Follow the Leaf (Loki & Tempo)",work:"Feb 1 – Feb 7",pub:"Sun, Feb 7",h:8,
+   why:"A live feed of every message and one trace per photo, from upload to verdict. Click a red tile and see why.",
+   items:[["Loki (event feed)","wip"],["Tempo (traces)","wip"]]},
+  {n:9,s:"Fall",t:"You've Got Chores (SNS & CloudWatch)",work:"Feb 8 – Feb 14",pub:"Sun, Feb 14",h:8,
+   why:"A CronJob in the cluster emails the 10 chores through SNS. Delivery stats from CloudWatch sit on the same Grafana board.",
+   items:[["SNS (email)","new"],["CloudWatch data source","new"],["Fall cleanup app (dispatcher)","new"]]},
+  {n:10,s:"Fall",t:"The Final Rake (Attack, Audit & Demo)",work:"Feb 15 – Feb 21",pub:"Sun, Feb 21",h:8,
+   why:"Poke the app and watch Falco and Trivy catch it, rerun kube-bench and Popeye against Fall #0, then an end-to-end demo and the total hours.",
+   items:[["Falco","ok"],["Trivy Operator","ok"],["kube-bench after","wip"],["Popeye after","wip"],["Fall cleanup app v1","new"]]}
+ ]},
+ {buffer:"Break: Feb 22 – Feb 28. Keep photographing every snowfall.",key:"winter"},
+ {season:"Winter Cleaning: Weather the Storm",note:{theme:"Reliability and operations.",goal:"Upgrade the Fall app to handle snow-day spikes, real deadlines and harder photos, built from snow photos taken Dec through Feb."},key:"winter"},
+ {name:"Phase 4: Storm-Ready",sub:"Harder photos, sudden spikes, safer deploys",key:"winter",posts:[
+  {n:1,s:"Winter",t:"Storm Prep (New Chores & Durable Data)",work:"Mar 1 – Mar 7",pub:"Sun, Mar 7",h:5,
+   why:"Swap in snow chores with one pull request, and move the photos bucket and DynamoDB table to a Terraform workspace you never destroy, so history survives every rebuild.",
+   items:[["App v2: winter chores","new"],["Data workspace (say_when_data)","new"],["Argo CD","wip"]]},
+  {n:2,s:"Winter",t:"Is the Path Clear? (Bedrock Nova)",work:"Mar 8 – Mar 14",pub:"Sun, Mar 14",h:8,
+   why:"Rekognition says \"Snow\" for shoveled and unshoveled driveways alike. Borderline photos go to Nova with a real question: is the path clear?",
+   items:[["Bedrock IAM (second opinion)","wip"]]},
+  {n:3,s:"Winter",t:"Storm Morning (Karpenter & Autoscaling)",work:"Mar 15 – Mar 21",pub:"Sun, Mar 21",h:6,
+   why:"Everyone shovels at once. Replay a burst of photos and watch pods and Spot nodes scale up, then back down.",
+   items:[["Karpenter","ok"],["Metrics Server","ok"]]},
+  {n:4,s:"Winter",t:"Don't Deploy in a Blizzard (Argo Rollouts)",work:"Mar 22 – Mar 28",pub:"Sun, Mar 28",h:10,
+   why:"Convert the checker to a canary with automatic rollback from Prometheus, and the upload page to blue-green with a manual promote.",
+   items:[["Argo Rollouts canary","wip"],["Argo Rollouts blue-green","wip"]]}
+ ]},
+ {name:"Phase 5: Urgent Chores",sub:"Deadlines, texts and the winter recap",key:"winter",posts:[
+  {n:5,s:"Winter",t:"Ice Alert (SMS & EventBridge Scheduler)",work:"Mar 29 – Apr 4",pub:"Sun, Apr 4",h:6,
+   why:"Urgent chores get a text, not an email. The dispatcher moves from a CronJob to EventBridge Scheduler.",
+   items:[["SNS (text)","new"],["EventBridge Scheduler","new"]]},
+  {n:6,s:"Winter",t:"Salt Before It Freezes (Step Functions & Alertmanager)",work:"Apr 5 – Apr 11",pub:"Sun, Apr 11",h:10,
+   why:"Each chore becomes a workflow with a deadline: send, wait for a photo, check it, remind, escalate. Alertmanager flags anything overdue.",
+   items:[["Step Functions","new"],["Alertmanager","wip"]]},
+  {n:7,s:"Winter",t:"The Thaw (Fall vs Winter)",work:"Apr 12 – Apr 18",pub:"Sun, Apr 18",h:4,
+   why:"Tag v2.0, compare the two seasons with Thanos history and total up the hours.",
+   items:[["Thanos (season vs season)","ok"],["App v2 complete","new"]]}
+ ]},
+ {buffer:"Break: Apr 19 – May 2.",key:"spring"},
+ {season:"Spring Cleaning: Grow It",note:{theme:"Smarter, open to more people and cost-aware.",goal:"Add gardening and patio chores, let family and neighbors help, show what each chore costs, and compare all three seasons."},key:"spring"},
+ {name:"Phase 6: Grow It",sub:"More helpers, AI ops, costs and the finale",key:"spring",posts:[
+  {n:1,s:"Spring",t:"Fresh Chores (Rules Through Git)",work:"May 3 – May 9",pub:"Sun, May 9",h:4,
+   why:"Swap in spring chores with one pull request. By now the change is routine, which is the point.",
+   items:[["App v3: spring chores","new"]]},
+  {n:2,s:"Spring",t:"More Hands (Cognito)",work:"May 10 – May 16",pub:"Sun, May 16",h:6,
+   why:"Replace the per-link tokens with a real login so family and neighbors can help.",
+   items:[["Cognito","new"]]},
+  {n:3,s:"Spring",t:"Break It on Purpose (K8sGPT)",work:"May 17 – May 23",pub:"Sun, May 23",h:5,
+   why:"Break the app in a few realistic ways and let K8sGPT diagnose each one with Bedrock.",
+   items:[["K8sGPT","wip"]]},
+  {n:4,s:"Spring",t:"What Does a Chore Cost? (Cost Dashboard)",work:"May 24 – May 30",pub:"Sun, May 30",h:8,
+   why:"Cost per chore and per photo next to the pass/fail board, using the budget alerts from Fall #0.",
+   items:[["Cost-per-chore dashboard","new"],["Grafana board","wip"]]},
+  {n:5,s:"Spring",t:"Three Seasons (Fall vs Winter vs Spring)",work:"May 31 – Jun 6",pub:"Sun, Jun 6",h:5,
+   why:"Tag v3.0 and put all three seasons side by side: what was added, what changed, the full skills ledger and the total hours.",
+   items:[["Thanos (season vs season)","ok"],["App v3 complete","new"]]}
+ ]}
+];
+const IC={ok:"✓",wip:"~",new:"✗"};
+const posts=PHASES.filter(p=>p.posts).flatMap(p=>p.posts.map(x=>({...x,key:p.key})));
+const sum=k=>posts.filter(p=>!k||p.key===k).reduce((a,p)=>a+p.h,0);
+const total=sum(),maxH=Math.max(...posts.map(p=>p.h));
+document.getElementById("totalHrs").textContent=total+" h";
+for(const k of ["fall","winter","spring"])document.getElementById("h-"+k).textContent=sum(k)+" h";
+const tl=document.getElementById("timeline");const cum={fall:0,winter:0,spring:0};
+let wrap=null,wrapKey=null;
+for(const ph of PHASES){
+  if(ph.season){wrap=document.createElement("section");wrap.className="sw sw-"+ph.key;wrapKey=ph.key;tl.appendChild(wrap);
+    wrap.insertAdjacentHTML("beforeend",`<div class="season"><h2>${ph.season}</h2><dl class="tg"><dt>Theme</dt><dd>${ph.note.theme}</dd><dt>Goal</dt><dd>${ph.note.goal}</dd></dl><span class="cum">${sum(ph.key)} h total</span><div class="key"><span class="sbar mini"><i class="prev" style="width:55%"></i><i class="cur" style="width:20%"></i></span><span>Season progress bar: faded = earlier posts, solid = this post, empty = still to go</span></div></div>`);continue;}
+  if(ph.buffer){(ph.key===wrapKey?wrap:tl).insertAdjacentHTML("beforeend",`<div class="buffer"><strong>Break</strong><span>${ph.buffer}</span></div>`);continue;}
+  const hrs=ph.posts.reduce((a,p)=>a+p.h,0);
+  let html=`<section class="phase"><div class="phase-head"><h3 style="font-family:var(--display);font-weight:700;font-size:19px">${ph.name}</h3><span class="meta">${ph.sub} · ${ph.posts.length} posts · ${hrs} h</span></div>`;
+  for(const p of ph.posts){cum[ph.key]+=p.h;
+    const chips=p.items.map(([n,st])=>`<span class="chip ${st}" data-s="${st}"><span class="ic" aria-hidden="true">${IC[st]}</span>${n}<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"> (${st==="ok"?"done":st==="wip"?"in progress":"need to add"})</span></span>`).join("");
+    html+=`<article class="post" id="${p.s.toLowerCase()}-${p.n}"><div class="when"><span class="part">${p.s.toUpperCase()} #${p.n}</span><span class="pub">Publish ${p.pub}</span><span class="small">Work: ${p.work}</span><span class="small">${p.h} h for this post</span><div class="sbar" role="img" aria-label="${Math.round(cum[ph.key]/sum(ph.key)*100)}% of the season done after this post"><i class="prev" style="width:${((cum[ph.key]-p.h)/sum(ph.key)*100).toFixed(1)}%"></i><i class="cur" style="width:${(p.h/sum(ph.key)*100).toFixed(1)}%"></i></div><span class="cum">${cum[ph.key]} of ${sum(ph.key)} h · ${Math.round(cum[ph.key]/sum(ph.key)*100)}% of ${p.s}</span></div>
+    <div class="what"><h3>${p.s} Cleaning #${p.n}: ${p.t}</h3><p class="why">${p.why}</p><div class="chips">${chips}</div></div></article>`;}
+  wrap.insertAdjacentHTML("beforeend",html+"</section>");
+}
+const STATUS={
+ ok:[
+  ["EKS cluster","say-when-east, ARM64 Spot","Infra",[["fall",0]]],
+  ["HCP Terraform + OIDC","Remote runs, no stored keys","Infra",[["fall",0]]],
+  ["gp3 storage + namespaces","Already backing the monitoring stack","GitOps",[["fall",2]]],
+  ["VPC + S3 gateway endpoint","Photo traffic to S3 stays free","Infra",[["fall",5]]],
+  ["Thanos","Keeps metric history in S3","GitOps",[["fall",7],["winter",7],["spring",5]]],
+  ["Trivy Operator","Scans the app image automatically","GitOps",[["fall",10]]],
+  ["Falco","Default rules catch shells in app pods","GitOps",[["fall",10]]],
+  ["Metrics Server","Ready for app autoscaling","GitOps",[["winter",3]]],
+  ["Karpenter","Scales Spot nodes for photo bursts","GitOps",[["winter",3]]]],
+ wip:[
+  ["kube-bench","Before and after results","GitOps",[["fall",0],["fall",10]]],
+  ["Popeye","Before and after health score","GitOps",[["fall",0],["fall",10]]],
+  ["ECR + Popeye build script","Reuse for the app image","Infra",[["fall",1]]],
+  ["GitHub Actions CI","Add app build, scan, sign and push","Infra",[["fall",1]]],
+  ["Argo CD","New lab-app project, chores changed through Git","GitOps",[["fall",2],["winter",1]]],
+  ["Envoy Gateway","Routes, then HTTPS and rate limiting","GitOps",[["fall",2],["fall",4]]],
+  ["Kyverno","Add a signed-images-only policy","GitOps",[["fall",3]]],
+  ["Network policies","Default-deny rules for the app namespace","GitOps",[["fall",3]]],
+  ["External Secrets","App settings from Secrets Manager","GitOps",[["fall",3]]],
+  ["Pod Identity","New association for the app","Infra",[["fall",3]]],
+  ["Secrets Manager","New app settings secret","Infra",[["fall",3]]],
+  ["Prometheus","Scrape the app's pass/fail metrics","GitOps",[["fall",7]]],
+  ["Grafana","The green/red board, later costs","GitOps",[["fall",7],["spring",4]]],
+  ["Loki","Message feed for chores and photos","GitOps",[["fall",8]]],
+  ["Tempo","One trace per photo","GitOps",[["fall",8]]],
+  ["Bedrock IAM","Second opinion on snow photos","Infra",[["winter",2]]],
+  ["Argo Rollouts: canary","Checker with Prometheus rollback","GitOps",[["winter",4]]],
+  ["Argo Rollouts: blue-green","Upload page with manual promote","GitOps",[["winter",4]]],
+  ["Alertmanager","Turn on for overdue chores","GitOps",[["winter",6]]],
+  ["K8sGPT","Break-it-on-purpose diagnosis","GitOps",[["spring",3]]]],
+ new:[
+  ["Budgets + Cost Anomaly Detection","Cost alerts before anything is built","AWS",[["fall",0]]],
+  ["Cleanup app","say_when_app repo: v1 Fall, v2 Winter, v3 Spring","App",[["fall",1],["winter",7],["spring",5]]],
+  ["Route 53 + ACM","Subdomain and HTTPS certificate","AWS",[["fall",4]]],
+  ["Load Balancer Controller + NLB","Let phones reach Envoy Gateway","AWS",[["fall",4]]],
+  ["S3 photos bucket","Uploads with a 30-day lifecycle","AWS",[["fall",5]]],
+  ["SQS","Photo queue with dead-letter queue","AWS",[["fall",5]]],
+  ["Rekognition","Check photos with DetectLabels","AWS",[["fall",6]]],
+  ["DynamoDB","Chore state and results","AWS",[["fall",6]]],
+  ["SNS","Email in Fall, texts in Winter","AWS",[["fall",9],["winter",5]]],
+  ["CloudWatch data source","SNS and SQS stats in Grafana","AWS",[["fall",9]]],
+  ["Data workspace (say_when_data)","Photos and results survive rebuilds","Infra",[["winter",1]]],
+  ["EventBridge Scheduler","Replaces the CronJob dispatcher","AWS",[["winter",5]]],
+  ["Step Functions","Chore workflow with deadlines","AWS",[["winter",6]]],
+  ["Cognito","Login so family and neighbors can help","AWS",[["spring",2]]],
+  ["Cost-per-chore dashboard","What each chore and photo costs","AWS",[["spring",4]]]]
+};
+const CATS={"Platform and delivery": ["EKS cluster", "HCP Terraform + OIDC", "gp3 storage + namespaces", "VPC + S3 gateway endpoint", "Metrics Server", "Karpenter", "ECR + Popeye build script", "GitHub Actions CI", "Argo CD", "Argo Rollouts: canary", "Argo Rollouts: blue-green"], "Security": ["Trivy Operator", "Falco", "kube-bench", "Popeye", "Kyverno", "Network policies", "External Secrets", "Pod Identity", "Secrets Manager"], "Front door and access": ["Envoy Gateway", "Route 53 + ACM", "Load Balancer Controller + NLB", "Cognito"], "Data and messaging": ["S3 photos bucket", "SQS", "DynamoDB", "SNS", "Data workspace (say_when_data)", "EventBridge Scheduler", "Step Functions"], "Observability": ["Thanos", "Prometheus", "Grafana", "Loki", "Tempo", "Alertmanager", "CloudWatch data source"], "App and AI": ["Cleanup app", "Rekognition", "Bedrock IAM", "K8sGPT"], "Cost": ["Budgets + Cost Anomaly Detection", "Cost-per-chore dashboard"]};
+const SEASONS=[["fall","Fall"],["winter","Winter"],["spring","Spring"]];
+const SL={ok:"Done",wip:"In progress",new:"Need to add"};
+(function(){
+  const order={fall:0,winter:1,spring:2};
+  const all=Object.entries(STATUS).flatMap(([st,rows])=>rows.map(r=>({st,name:r[0],note:r[1],area:r[2],lands:r[3]})));
+  const first=r=>order[r.lands[0][0]];
+  const prog=document.getElementById("progress");
+  let ph=`<div class="prog-head"><h2>Progress by season</h2><span class="meta">${all.length} components · each bar counts what's in use by the end of that season</span></div>`;
+  for(const [k,label] of SEASONS){
+    const upto=all.filter(r=>first(r)<=order[k]);
+    const seg=st=>upto.filter(r=>r.st===st).length;
+    const pct=n=>(n/all.length*100).toFixed(1);
+    ph+=`<div class="prow"><span class="plabel ${k}">End of ${label}</span><div class="pbar" role="img" aria-label="${upto.length} of ${all.length} components in use">
+      <i class="ok" style="width:${pct(seg("ok"))}%"></i><i class="wip" style="width:${pct(seg("wip"))}%"></i><i class="new" style="width:${pct(seg("new"))}%"></i></div>
+      <span class="pnum">${upto.length} / ${all.length}</span></div>`;
+  }
+  prog.innerHTML=ph;
+  const box=document.getElementById("status");
+  const catOf=n=>Object.keys(CATS).find(c=>CATS[c].includes(n));
+  const catIx=n=>Object.keys(CATS).indexOf(catOf(n));
+  const rank=r=>order[r.lands[0][0]]*100+r.lands[0][1];
+  const seq=[...all].sort((x,y)=>rank(x)-rank(y)||catIx(x.name)-catIx(y.name));
+  seq.forEach((r,i)=>r.ord=i+1);
+  const ordOf=Object.fromEntries(seq.map(r=>[r.name,r.ord]));
+  const row=(st,n,note,area,lands)=>{
+    const where=lands.map(([s,p])=>`<a class="land ${s}" href="#${s}-${p}">${s[0].toUpperCase()+s.slice(1)} ${p}</a>`).join("");
+    return `<div class="srow ${st}-stripe"><div class="sname"><span class="ord" title="Build order">#${ordOf[n]}</span><span class="ic" aria-hidden="true" style="color:var(--${st})">${IC[st]}</span>${n}<span class="tag">${area}</span></div><div class="small">${catOf(n)} · ${note}</div><div class="lands">${where}</div></div>`;};
+  function draw(mode){
+    let h=`<div class="prog-head"><h2>Status board</h2><span class="meta">Where each piece stands today. #1 to #${all.length} is the order they get built.</span>
+      <span class="viewtog" role="group" aria-label="Board view"><button type="button" data-v="area" aria-pressed="${mode==="area"}">Group by area</button><button type="button" data-v="order" aria-pressed="${mode==="order"}">Build order</button></span></div><div class="sgrid">`;
+    for(const st of ["ok","wip","new"]){
+      const rows=STATUS[st].slice().sort((x,y)=>ordOf[x[0]]-ordOf[y[0]]);
+      h+=`<div class="scol${box.classList.contains("dim")&&curF===st?" on":""}" data-s="${st}"><div class="shead"><span class="chip ${st}"><span class="ic" aria-hidden="true">${IC[st]}</span>${SL[st]}</span><span class="small">${rows.length} items</span></div>`;
+      if(mode==="area"){
+        for(const c of Object.keys(CATS)){
+          const grp=rows.filter(r=>catOf(r[0])===c); if(!grp.length)continue;
+          h+=`<div class="cat">${c}<span class="n">${grp.length}</span></div>`+grp.map(r=>row(st,...r)).join("");
+        }
+      }else{
+        let last=null;
+        for(const r of rows){const sea=r[3][0][0]; if(sea!==last){h+=`<div class="cat"><span class="land ${sea}" style="padding:0 8px">${sea[0].toUpperCase()+sea.slice(1)}</span></div>`;last=sea;} h+=row(st,...r);}
+      }
+      h+=`</div>`;
+    }
+    box.innerHTML=h+`</div>`;
+    box.querySelectorAll(".viewtog button").forEach(b=>b.addEventListener("click",()=>draw(b.dataset.v)));
+  }
+  window.drawStatus=draw; draw("area");
+})();
+
+let curF="all";
+const btns=[...document.querySelectorAll("button.f")];
+btns.forEach(b=>b.addEventListener("click",()=>{
+  const f=b.dataset.f;curF=f;btns.forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  tl.classList.toggle("dim",f!=="all");
+  const sb=document.getElementById("status");sb.classList.toggle("dim",f!=="all");sb.querySelectorAll(".scol").forEach(c=>c.classList.toggle("on",f==="all"||c.dataset.s===f));
+  tl.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",f==="all"||c.dataset.s===f));
+}));
+</script>
+</body>
+</html>
