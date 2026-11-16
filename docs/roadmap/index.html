@@ -203,93 +203,125 @@ button.f:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outli
 </main>
 
 <script>
+// =====================================================================
+//  EDIT STATUSES HERE: this list is the only place a status lives.
+//  status: "new" = ✗ need to add   "wip" = ~ in progress   "ok" = ✓ done
+//  After each post, change the word for what you finished, then commit.
+//  lands: [season, part, optional label shown on that post's card]
+// =====================================================================
+const COMPONENTS=[
+ {name:"EKS cluster", status:"ok", area:"Infra", note:"say-when-east, ARM64 Spot", lands:[["fall",0]]},
+ {name:"HCP Terraform + OIDC", status:"ok", area:"Infra", note:"Remote runs, no stored keys", lands:[["fall",0]]},
+ {name:"kube-bench", status:"wip", area:"GitOps", note:"Before and after results", lands:[["fall",0,"kube-bench baseline"],["fall",10,"kube-bench after"]]},
+ {name:"Popeye", status:"wip", area:"GitOps", note:"Before and after health score", lands:[["fall",0,"Popeye baseline"],["fall",10,"Popeye after"]]},
+ {name:"Budgets + Cost Anomaly Detection", status:"new", area:"AWS", note:"Cost alerts before anything is built", lands:[["fall",0]]},
+ {name:"Cleanup app", status:"new", area:"App", note:"say_when_app repo: v1 Fall, v2 Winter, v3 Spring", lands:[["fall",1,"Fall cleanup app (skeleton)"],["fall",6,"Fall cleanup app (checker)"],["fall",9,"Fall cleanup app (dispatcher)"],["fall",10,"Fall cleanup app v1"],["winter",1,"App v2: winter chores"],["winter",7,"App v2 complete"],["spring",1,"App v3: spring chores"],["spring",5,"App v3 complete"]]},
+ {name:"ECR + Popeye build script", status:"wip", area:"Infra", note:"Reuse for the app image", lands:[["fall",1,"ECR + build script"]]},
+ {name:"GitHub Actions CI", status:"wip", area:"Infra", note:"Add app build, scan, sign and push", lands:[["fall",1]]},
+ {name:"Argo CD", status:"wip", area:"GitOps", note:"New lab-app project, chores changed through Git", lands:[["fall",2],["winter",1]]},
+ {name:"Envoy Gateway", status:"wip", area:"GitOps", note:"Routes, then HTTPS and rate limiting", lands:[["fall",2,"Envoy Gateway (routes)"],["fall",4,"Envoy Gateway (HTTPS, rate limit)"]]},
+ {name:"gp3 storage + namespaces", status:"ok", area:"GitOps", note:"Already backing the monitoring stack", lands:[["fall",2]]},
+ {name:"Kyverno", status:"wip", area:"GitOps", note:"Add a signed-images-only policy", lands:[["fall",3,"Kyverno signed-image policy"]]},
+ {name:"Network policies", status:"wip", area:"GitOps", note:"Default-deny rules for the app namespace", lands:[["fall",3]]},
+ {name:"External Secrets", status:"wip", area:"GitOps", note:"App settings from Secrets Manager", lands:[["fall",3]]},
+ {name:"Pod Identity", status:"wip", area:"Infra", note:"New association for the app", lands:[["fall",3]]},
+ {name:"Secrets Manager", status:"wip", area:"Infra", note:"New app settings secret", lands:[["fall",3]]},
+ {name:"Route 53 + ACM", status:"new", area:"AWS", note:"Subdomain and HTTPS certificate", lands:[["fall",4]]},
+ {name:"Load Balancer Controller + NLB", status:"new", area:"AWS", note:"Let phones reach Envoy Gateway", lands:[["fall",4]]},
+ {name:"S3 photos bucket", status:"new", area:"AWS", note:"Uploads with a 30-day lifecycle", lands:[["fall",5]]},
+ {name:"SQS", status:"new", area:"AWS", note:"Photo queue with dead-letter queue", lands:[["fall",5,"SQS + dead-letter queue"]]},
+ {name:"VPC + S3 gateway endpoint", status:"ok", area:"Infra", note:"Photo traffic to S3 stays free", lands:[["fall",5]]},
+ {name:"Rekognition", status:"new", area:"AWS", note:"Check photos with DetectLabels", lands:[["fall",6]]},
+ {name:"DynamoDB", status:"new", area:"AWS", note:"Chore state and results", lands:[["fall",6]]},
+ {name:"Prometheus", status:"wip", area:"GitOps", note:"Scrape the app's pass/fail metrics", lands:[["fall",7,"Prometheus (app metrics)"]]},
+ {name:"Grafana", status:"wip", area:"GitOps", note:"The green/red board, later costs", lands:[["fall",7,"Grafana board"],["spring",4,"Grafana board"]]},
+ {name:"Thanos", status:"ok", area:"GitOps", note:"Keeps metric history in S3", lands:[["fall",7],["winter",7,"Thanos (season vs season)"],["spring",5,"Thanos (season vs season)"]]},
+ {name:"Loki", status:"wip", area:"GitOps", note:"Message feed for chores and photos", lands:[["fall",8,"Loki (event feed)"]]},
+ {name:"Tempo", status:"wip", area:"GitOps", note:"One trace per photo", lands:[["fall",8,"Tempo (traces)"]]},
+ {name:"SNS", status:"new", area:"AWS", note:"Email in Fall, texts in Winter", lands:[["fall",9,"SNS (email)"],["winter",5,"SNS (text)"]]},
+ {name:"CloudWatch data source", status:"new", area:"AWS", note:"SNS and SQS stats in Grafana", lands:[["fall",9]]},
+ {name:"Falco", status:"ok", area:"GitOps", note:"Default rules catch shells in app pods", lands:[["fall",10]]},
+ {name:"Trivy Operator", status:"ok", area:"GitOps", note:"Scans the app image automatically", lands:[["fall",10]]},
+ {name:"Data workspace (say_when_data)", status:"new", area:"Infra", note:"Photos and results survive rebuilds", lands:[["winter",1]]},
+ {name:"Bedrock IAM", status:"wip", area:"Infra", note:"Second opinion on snow photos", lands:[["winter",2,"Bedrock IAM (second opinion)"]]},
+ {name:"Karpenter", status:"ok", area:"GitOps", note:"Scales Spot nodes for photo bursts", lands:[["winter",3]]},
+ {name:"Metrics Server", status:"ok", area:"GitOps", note:"Ready for app autoscaling", lands:[["winter",3]]},
+ {name:"Argo Rollouts: canary", status:"wip", area:"GitOps", note:"Checker with Prometheus rollback", lands:[["winter",4,"Argo Rollouts canary"]]},
+ {name:"Argo Rollouts: blue-green", status:"wip", area:"GitOps", note:"Upload page with manual promote", lands:[["winter",4,"Argo Rollouts blue-green"]]},
+ {name:"EventBridge Scheduler", status:"new", area:"AWS", note:"Replaces the CronJob dispatcher", lands:[["winter",5]]},
+ {name:"Step Functions", status:"new", area:"AWS", note:"Chore workflow with deadlines", lands:[["winter",6]]},
+ {name:"Alertmanager", status:"wip", area:"GitOps", note:"Turn on for overdue chores", lands:[["winter",6]]},
+ {name:"Cognito", status:"new", area:"AWS", note:"Login so family and neighbors can help", lands:[["spring",2]]},
+ {name:"K8sGPT", status:"wip", area:"GitOps", note:"Break-it-on-purpose diagnosis", lands:[["spring",3]]},
+ {name:"Cost-per-chore dashboard", status:"new", area:"AWS", note:"What each chore and photo costs", lands:[["spring",4]]}
+];
+// Everything below is drawn from COMPONENTS. No need to edit it.
+const itemsFor=(season,part)=>COMPONENTS.flatMap(c=>c.lands.filter(l=>l[0]===season&&l[1]===part).map(l=>[l[2]||c.name,c.status]));
+
 const PHASES=[
  {season:"Fall Cleaning: Build It",note:{theme:"The minimum viable product.",goal:"Assign 10 chores by email, take photos in, judge them with Rekognition and show a green/red board, all shipped through GitOps on a locked-down cluster."},key:"fall"},
  {name:"Phase 1: Foundation",sub:"Ship a signed app the GitOps way, then lock it down",key:"fall",posts:[
   {n:0,s:"Fall",t:"The Game Plan (Baseline, Budget & Roadmap)",work:"Nov 16 – Nov 22",pub:"Sun, Nov 22",h:5,
-   why:"Start with the plan, a security and health baseline for before-and-after comparisons, and a budget alert before anything starts costing money.",
-   items:[["kube-bench baseline","wip"],["Popeye baseline","wip"],["Budgets + Cost Anomaly Detection","new"],["EKS cluster","ok"],["HCP Terraform + OIDC","ok"]]},
+   why:"Start with the plan, a security and health baseline for before-and-after comparisons, and a budget alert before anything starts costing money."},
   {n:1,s:"Fall",t:"Rakes & Repos (CI, ECR & Signed Images)",work:"Nov 23 – Dec 6",pub:"Sun, Dec 6",h:10,
-   why:"Create the say_when_app repo and an app skeleton, then a CI pipeline that builds, scans, signs and pushes it to ECR. Two weeks because of Thanksgiving.",
-   items:[["Fall cleanup app (skeleton)","new"],["ECR + build script","wip"],["GitHub Actions CI","wip"]]},
+   why:"Create the say_when_app repo and an app skeleton, then a CI pipeline that builds, scans, signs and pushes it to ECR. Two weeks because of Thanksgiving."},
   {n:2,s:"Fall",t:"Leaf It to GitOps (Argo CD & Envoy Gateway)",work:"Dec 7 – Dec 13",pub:"Sun, Dec 13",h:8,
-   why:"Deploy the app through its own Argo CD project and route to it with an HTTPRoute. First time the app runs in the cluster.",
-   items:[["Argo CD","wip"],["Envoy Gateway (routes)","wip"],["gp3 storage + namespaces","ok"]]},
+   why:"Deploy the app through its own Argo CD project and route to it with an HTTPRoute. First time the app runs in the cluster."},
   {n:3,s:"Fall",t:"Locking the Shed (Kyverno, Network Policies & Secrets)",work:"Dec 14 – Dec 20",pub:"Sun, Dec 20",h:8,
-   why:"Before the app touches AWS: signed images only, default-deny networking, and settings pulled from Secrets Manager with Pod Identity.",
-   items:[["Kyverno signed-image policy","wip"],["Network policies","wip"],["External Secrets","wip"],["Pod Identity","wip"],["Secrets Manager","wip"]]}
+   why:"Before the app touches AWS: signed images only, default-deny networking, and settings pulled from Secrets Manager with Pod Identity."}
  ]},
  {buffer:"Holiday break: Dec 21 – Jan 3.",key:"fall"},
  {name:"Phase 2: Open the Front Door and Get Photos In",sub:"Make it reachable, then accept and judge photos",key:"fall",posts:[
   {n:4,s:"Fall",t:"Open the Front Door (Route 53, ACM & NLB)",work:"Jan 4 – Jan 10",pub:"Sun, Jan 10",h:10,
-   why:"Give phones a real HTTPS address. Each emailed link carries a signed, expiring token for one chore, so the MVP is protected without a full login system.",
-   items:[["Route 53 + ACM","new"],["Load Balancer Controller + NLB","new"],["Envoy Gateway (HTTPS, rate limit)","wip"]]},
+   why:"Give phones a real HTTPS address. Each emailed link carries a signed, expiring token for one chore, so the MVP is protected without a full login system."},
   {n:5,s:"Fall",t:"Photos In (S3 & SQS)",work:"Jan 11 – Jan 17",pub:"Sun, Jan 17",h:8,
-   why:"The upload page sends photos straight to S3, and each one drops a message on a queue with a dead-letter queue for retries.",
-   items:[["S3 photos bucket","new"],["SQS + dead-letter queue","new"],["VPC + S3 gateway endpoint","ok"]]},
+   why:"The upload page sends photos straight to S3, and each one drops a message on a queue with a dead-letter queue for retries."},
   {n:6,s:"Fall",t:"Rake or Basketball? (Rekognition & DynamoDB)",work:"Jan 18 – Jan 24",pub:"Sun, Jan 24",h:10,
-   why:"The checker reads the queue, asks Rekognition what's in the photo, applies the pass/fail rules from Git and saves the verdict.",
-   items:[["Rekognition","new"],["DynamoDB","new"],["Fall cleanup app (checker)","new"]]}
+   why:"The checker reads the queue, asks Rekognition what's in the photo, applies the pass/fail rules from Git and saves the verdict."}
  ]},
  {name:"Phase 3: See It and Send It",sub:"Watch every photo, then send the chores out",key:"fall",posts:[
   {n:7,s:"Fall",t:"Green or Red (Prometheus, Thanos & Grafana)",work:"Jan 25 – Jan 31",pub:"Sun, Jan 31",h:8,
-   why:"Pass/fail metrics from the app and the 10-tile green/red board. Thanos keeps the history so Spring can compare against Fall.",
-   items:[["Prometheus (app metrics)","wip"],["Grafana board","wip"],["Thanos","ok"]]},
+   why:"Pass/fail metrics from the app and the 10-tile green/red board. Thanos keeps the history so Spring can compare against Fall."},
   {n:8,s:"Fall",t:"Follow the Leaf (Loki & Tempo)",work:"Feb 1 – Feb 7",pub:"Sun, Feb 7",h:8,
-   why:"A live feed of every message and one trace per photo, from upload to verdict. Click a red tile and see why.",
-   items:[["Loki (event feed)","wip"],["Tempo (traces)","wip"]]},
+   why:"A live feed of every message and one trace per photo, from upload to verdict. Click a red tile and see why."},
   {n:9,s:"Fall",t:"You've Got Chores (SNS & CloudWatch)",work:"Feb 8 – Feb 14",pub:"Sun, Feb 14",h:8,
-   why:"A CronJob in the cluster emails the 10 chores through SNS. Delivery stats from CloudWatch sit on the same Grafana board.",
-   items:[["SNS (email)","new"],["CloudWatch data source","new"],["Fall cleanup app (dispatcher)","new"]]},
+   why:"A CronJob in the cluster emails the 10 chores through SNS. Delivery stats from CloudWatch sit on the same Grafana board."},
   {n:10,s:"Fall",t:"The Final Rake (Attack, Audit & Demo)",work:"Feb 15 – Feb 21",pub:"Sun, Feb 21",h:8,
-   why:"Poke the app and watch Falco and Trivy catch it, rerun kube-bench and Popeye against Fall #0, then an end-to-end demo and the total hours.",
-   items:[["Falco","ok"],["Trivy Operator","ok"],["kube-bench after","wip"],["Popeye after","wip"],["Fall cleanup app v1","new"]]}
+   why:"Poke the app and watch Falco and Trivy catch it, rerun kube-bench and Popeye against Fall #0, then an end-to-end demo and the total hours."}
  ]},
  {buffer:"Break: Feb 22 – Feb 28. Keep photographing every snowfall.",key:"winter"},
  {season:"Winter Cleaning: Weather the Storm",note:{theme:"Reliability and operations.",goal:"Upgrade the Fall app to handle snow-day spikes, real deadlines and harder photos, built from snow photos taken Dec through Feb."},key:"winter"},
  {name:"Phase 4: Storm-Ready",sub:"Harder photos, sudden spikes, safer deploys",key:"winter",posts:[
   {n:1,s:"Winter",t:"Storm Prep (New Chores & Durable Data)",work:"Mar 1 – Mar 7",pub:"Sun, Mar 7",h:5,
-   why:"Swap in snow chores with one pull request, and move the photos bucket and DynamoDB table to a Terraform workspace you never destroy, so history survives every rebuild.",
-   items:[["App v2: winter chores","new"],["Data workspace (say_when_data)","new"],["Argo CD","wip"]]},
+   why:"Swap in snow chores with one pull request, and move the photos bucket and DynamoDB table to a Terraform workspace you never destroy, so history survives every rebuild."},
   {n:2,s:"Winter",t:"Is the Path Clear? (Bedrock Nova)",work:"Mar 8 – Mar 14",pub:"Sun, Mar 14",h:8,
-   why:"Rekognition says \"Snow\" for shoveled and unshoveled driveways alike. Borderline photos go to Nova with a real question: is the path clear?",
-   items:[["Bedrock IAM (second opinion)","wip"]]},
+   why:"Rekognition says \"Snow\" for shoveled and unshoveled driveways alike. Borderline photos go to Nova with a real question: is the path clear?"},
   {n:3,s:"Winter",t:"Storm Morning (Karpenter & Autoscaling)",work:"Mar 15 – Mar 21",pub:"Sun, Mar 21",h:6,
-   why:"Everyone shovels at once. Replay a burst of photos and watch pods and Spot nodes scale up, then back down.",
-   items:[["Karpenter","ok"],["Metrics Server","ok"]]},
+   why:"Everyone shovels at once. Replay a burst of photos and watch pods and Spot nodes scale up, then back down."},
   {n:4,s:"Winter",t:"Don't Deploy in a Blizzard (Argo Rollouts)",work:"Mar 22 – Mar 28",pub:"Sun, Mar 28",h:10,
-   why:"Convert the checker to a canary with automatic rollback from Prometheus, and the upload page to blue-green with a manual promote.",
-   items:[["Argo Rollouts canary","wip"],["Argo Rollouts blue-green","wip"]]}
+   why:"Convert the checker to a canary with automatic rollback from Prometheus, and the upload page to blue-green with a manual promote."}
  ]},
  {name:"Phase 5: Urgent Chores",sub:"Deadlines, texts and the winter recap",key:"winter",posts:[
   {n:5,s:"Winter",t:"Ice Alert (SMS & EventBridge Scheduler)",work:"Mar 29 – Apr 4",pub:"Sun, Apr 4",h:6,
-   why:"Urgent chores get a text, not an email. The dispatcher moves from a CronJob to EventBridge Scheduler.",
-   items:[["SNS (text)","new"],["EventBridge Scheduler","new"]]},
+   why:"Urgent chores get a text, not an email. The dispatcher moves from a CronJob to EventBridge Scheduler."},
   {n:6,s:"Winter",t:"Salt Before It Freezes (Step Functions & Alertmanager)",work:"Apr 5 – Apr 11",pub:"Sun, Apr 11",h:10,
-   why:"Each chore becomes a workflow with a deadline: send, wait for a photo, check it, remind, escalate. Alertmanager flags anything overdue.",
-   items:[["Step Functions","new"],["Alertmanager","wip"]]},
+   why:"Each chore becomes a workflow with a deadline: send, wait for a photo, check it, remind, escalate. Alertmanager flags anything overdue."},
   {n:7,s:"Winter",t:"The Thaw (Fall vs Winter)",work:"Apr 12 – Apr 18",pub:"Sun, Apr 18",h:4,
-   why:"Tag v2.0, compare the two seasons with Thanos history and total up the hours.",
-   items:[["Thanos (season vs season)","ok"],["App v2 complete","new"]]}
+   why:"Tag v2.0, compare the two seasons with Thanos history and total up the hours."}
  ]},
  {buffer:"Break: Apr 19 – May 2.",key:"spring"},
  {season:"Spring Cleaning: Grow It",note:{theme:"Smarter, open to more people and cost-aware.",goal:"Add gardening and patio chores, let family and neighbors help, show what each chore costs, and compare all three seasons."},key:"spring"},
  {name:"Phase 6: Grow It",sub:"More helpers, AI ops, costs and the finale",key:"spring",posts:[
   {n:1,s:"Spring",t:"Fresh Chores (Rules Through Git)",work:"May 3 – May 9",pub:"Sun, May 9",h:4,
-   why:"Swap in spring chores with one pull request. By now the change is routine, which is the point.",
-   items:[["App v3: spring chores","new"]]},
+   why:"Swap in spring chores with one pull request. By now the change is routine, which is the point."},
   {n:2,s:"Spring",t:"More Hands (Cognito)",work:"May 10 – May 16",pub:"Sun, May 16",h:6,
-   why:"Replace the per-link tokens with a real login so family and neighbors can help.",
-   items:[["Cognito","new"]]},
+   why:"Replace the per-link tokens with a real login so family and neighbors can help."},
   {n:3,s:"Spring",t:"Break It on Purpose (K8sGPT)",work:"May 17 – May 23",pub:"Sun, May 23",h:5,
-   why:"Break the app in a few realistic ways and let K8sGPT diagnose each one with Bedrock.",
-   items:[["K8sGPT","wip"]]},
+   why:"Break the app in a few realistic ways and let K8sGPT diagnose each one with Bedrock."},
   {n:4,s:"Spring",t:"What Does a Chore Cost? (Cost Dashboard)",work:"May 24 – May 30",pub:"Sun, May 30",h:8,
-   why:"Cost per chore and per photo next to the pass/fail board, using the budget alerts from Fall #0.",
-   items:[["Cost-per-chore dashboard","new"],["Grafana board","wip"]]},
+   why:"Cost per chore and per photo next to the pass/fail board, using the budget alerts from Fall #0."},
   {n:5,s:"Spring",t:"Three Seasons (Fall vs Winter vs Spring)",work:"May 31 – Jun 6",pub:"Sun, Jun 6",h:5,
-   why:"Tag v3.0 and put all three seasons side by side: what was added, what changed, the full skills ledger and the total hours.",
-   items:[["Thanos (season vs season)","ok"],["App v3 complete","new"]]}
+   why:"Tag v3.0 and put all three seasons side by side: what was added, what changed, the full skills ledger and the total hours."}
  ]}
 ];
 const IC={ok:"✓",wip:"~",new:"✗"};
@@ -307,60 +339,13 @@ for(const ph of PHASES){
   const hrs=ph.posts.reduce((a,p)=>a+p.h,0);
   let html=`<section class="phase"><div class="phase-head"><h3 style="font-family:var(--display);font-weight:700;font-size:19px">${ph.name}</h3><span class="meta">${ph.sub} · ${ph.posts.length} posts · ${hrs} h</span></div>`;
   for(const p of ph.posts){cum[ph.key]+=p.h;
-    const chips=p.items.map(([n,st])=>`<span class="chip ${st}" data-s="${st}"><span class="ic" aria-hidden="true">${IC[st]}</span>${n}<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"> (${st==="ok"?"done":st==="wip"?"in progress":"need to add"})</span></span>`).join("");
+    const chips=itemsFor(p.s.toLowerCase(),p.n).map(([n,st])=>`<span class="chip ${st}" data-s="${st}"><span class="ic" aria-hidden="true">${IC[st]}</span>${n}<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"> (${st==="ok"?"done":st==="wip"?"in progress":"need to add"})</span></span>`).join("");
     html+=`<article class="post" id="${p.s.toLowerCase()}-${p.n}"><div class="when"><span class="part">${p.s.toUpperCase()} #${p.n}</span><span class="pub">Publish ${p.pub}</span><span class="small">Work: ${p.work}</span><span class="small">${p.h} h for this post</span><div class="sbar" role="img" aria-label="${Math.round(cum[ph.key]/sum(ph.key)*100)}% of the season done after this post"><i class="prev" style="width:${((cum[ph.key]-p.h)/sum(ph.key)*100).toFixed(1)}%"></i><i class="cur" style="width:${(p.h/sum(ph.key)*100).toFixed(1)}%"></i></div><span class="cum">${cum[ph.key]} of ${sum(ph.key)} h · ${Math.round(cum[ph.key]/sum(ph.key)*100)}% of ${p.s}</span></div>
     <div class="what"><h3>${p.s} Cleaning #${p.n}: ${p.t}</h3><p class="why">${p.why}</p><div class="chips">${chips}</div></div></article>`;}
   wrap.insertAdjacentHTML("beforeend",html+"</section>");
 }
-const STATUS={
- ok:[
-  ["EKS cluster","say-when-east, ARM64 Spot","Infra",[["fall",0]]],
-  ["HCP Terraform + OIDC","Remote runs, no stored keys","Infra",[["fall",0]]],
-  ["gp3 storage + namespaces","Already backing the monitoring stack","GitOps",[["fall",2]]],
-  ["VPC + S3 gateway endpoint","Photo traffic to S3 stays free","Infra",[["fall",5]]],
-  ["Thanos","Keeps metric history in S3","GitOps",[["fall",7],["winter",7],["spring",5]]],
-  ["Trivy Operator","Scans the app image automatically","GitOps",[["fall",10]]],
-  ["Falco","Default rules catch shells in app pods","GitOps",[["fall",10]]],
-  ["Metrics Server","Ready for app autoscaling","GitOps",[["winter",3]]],
-  ["Karpenter","Scales Spot nodes for photo bursts","GitOps",[["winter",3]]]],
- wip:[
-  ["kube-bench","Before and after results","GitOps",[["fall",0],["fall",10]]],
-  ["Popeye","Before and after health score","GitOps",[["fall",0],["fall",10]]],
-  ["ECR + Popeye build script","Reuse for the app image","Infra",[["fall",1]]],
-  ["GitHub Actions CI","Add app build, scan, sign and push","Infra",[["fall",1]]],
-  ["Argo CD","New lab-app project, chores changed through Git","GitOps",[["fall",2],["winter",1]]],
-  ["Envoy Gateway","Routes, then HTTPS and rate limiting","GitOps",[["fall",2],["fall",4]]],
-  ["Kyverno","Add a signed-images-only policy","GitOps",[["fall",3]]],
-  ["Network policies","Default-deny rules for the app namespace","GitOps",[["fall",3]]],
-  ["External Secrets","App settings from Secrets Manager","GitOps",[["fall",3]]],
-  ["Pod Identity","New association for the app","Infra",[["fall",3]]],
-  ["Secrets Manager","New app settings secret","Infra",[["fall",3]]],
-  ["Prometheus","Scrape the app's pass/fail metrics","GitOps",[["fall",7]]],
-  ["Grafana","The green/red board, later costs","GitOps",[["fall",7],["spring",4]]],
-  ["Loki","Message feed for chores and photos","GitOps",[["fall",8]]],
-  ["Tempo","One trace per photo","GitOps",[["fall",8]]],
-  ["Bedrock IAM","Second opinion on snow photos","Infra",[["winter",2]]],
-  ["Argo Rollouts: canary","Checker with Prometheus rollback","GitOps",[["winter",4]]],
-  ["Argo Rollouts: blue-green","Upload page with manual promote","GitOps",[["winter",4]]],
-  ["Alertmanager","Turn on for overdue chores","GitOps",[["winter",6]]],
-  ["K8sGPT","Break-it-on-purpose diagnosis","GitOps",[["spring",3]]]],
- new:[
-  ["Budgets + Cost Anomaly Detection","Cost alerts before anything is built","AWS",[["fall",0]]],
-  ["Cleanup app","say_when_app repo: v1 Fall, v2 Winter, v3 Spring","App",[["fall",1],["winter",7],["spring",5]]],
-  ["Route 53 + ACM","Subdomain and HTTPS certificate","AWS",[["fall",4]]],
-  ["Load Balancer Controller + NLB","Let phones reach Envoy Gateway","AWS",[["fall",4]]],
-  ["S3 photos bucket","Uploads with a 30-day lifecycle","AWS",[["fall",5]]],
-  ["SQS","Photo queue with dead-letter queue","AWS",[["fall",5]]],
-  ["Rekognition","Check photos with DetectLabels","AWS",[["fall",6]]],
-  ["DynamoDB","Chore state and results","AWS",[["fall",6]]],
-  ["SNS","Email in Fall, texts in Winter","AWS",[["fall",9],["winter",5]]],
-  ["CloudWatch data source","SNS and SQS stats in Grafana","AWS",[["fall",9]]],
-  ["Data workspace (say_when_data)","Photos and results survive rebuilds","Infra",[["winter",1]]],
-  ["EventBridge Scheduler","Replaces the CronJob dispatcher","AWS",[["winter",5]]],
-  ["Step Functions","Chore workflow with deadlines","AWS",[["winter",6]]],
-  ["Cognito","Login so family and neighbors can help","AWS",[["spring",2]]],
-  ["Cost-per-chore dashboard","What each chore and photo costs","AWS",[["spring",4]]]]
-};
+const STATUS={ok:[],wip:[],new:[]};
+COMPONENTS.forEach(c=>STATUS[c.status].push([c.name,c.note,c.area,c.lands.map(l=>[l[0],l[1]])]));
 const CATS={"Platform and delivery": ["EKS cluster", "HCP Terraform + OIDC", "gp3 storage + namespaces", "VPC + S3 gateway endpoint", "Metrics Server", "Karpenter", "ECR + Popeye build script", "GitHub Actions CI", "Argo CD", "Argo Rollouts: canary", "Argo Rollouts: blue-green"], "Security": ["Trivy Operator", "Falco", "kube-bench", "Popeye", "Kyverno", "Network policies", "External Secrets", "Pod Identity", "Secrets Manager"], "Front door and access": ["Envoy Gateway", "Route 53 + ACM", "Load Balancer Controller + NLB", "Cognito"], "Data and messaging": ["S3 photos bucket", "SQS", "DynamoDB", "SNS", "Data workspace (say_when_data)", "EventBridge Scheduler", "Step Functions"], "Observability": ["Thanos", "Prometheus", "Grafana", "Loki", "Tempo", "Alertmanager", "CloudWatch data source"], "App and AI": ["Cleanup app", "Rekognition", "Bedrock IAM", "K8sGPT"], "Cost": ["Budgets + Cost Anomaly Detection", "Cost-per-chore dashboard"]};
 const SEASONS=[["fall","Fall"],["winter","Winter"],["spring","Spring"]];
 const SL={ok:"Done",wip:"In progress",new:"Need to add"};
