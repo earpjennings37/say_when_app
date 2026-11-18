@@ -1,0 +1,25 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Chore photos: NEVER commit (phone photos carry GPS/location EXIF) ---
+# .png is intentionally NOT ignored, so blog screenshots/diagrams can be committed.
+*.jpg
+*.jpeg
+*.JPG
+*.JPEG
+*.heic
+*.HEIC
+photos/
+
+# --- Build/CI output ---
+sbom*.json

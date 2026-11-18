@@ -1,0 +1,23 @@
+# Keep the build context small and the image free of things it doesn't need.
+.git
+.github
+.gitignore
+.dockerignore
+.venv
+venv
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+tests
+docs
+*.md
+
+# Never ship photos
+*.jpg
+*.jpeg
+*.JPG
+*.JPEG
+*.heic
+*.HEIC
+photos/
+sbom*.json
