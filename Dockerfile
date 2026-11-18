@@ -15,6 +15,14 @@ ENV APP_VERSION=${APP_VERSION} \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+# NEW: apply Debian security patches newer than the base image (e.g. zlib),
+# then remove pip. The app never installs anything at runtime, and pip's
+# bundled libraries (msgpack, urllib3, setuptools) carried 5 HIGH CVEs.
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && rm -rf /var/lib/apt/lists/* \
+ && python -m pip uninstall -y pip
+
 # A user with no password, no home and no login shell. The app never runs as root.
 RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin app
 
