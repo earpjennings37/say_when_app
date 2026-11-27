@@ -186,7 +186,7 @@ button.f:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outli
   <section class="prereq">
     <h3>Before Fall Cleaning #0 (this week)</h3>
     <ul>
-      <li>Merge the pending <span style="font-family:var(--mono);font-size:14px">say_when_infra</span> and <span style="font-family:var(--mono);font-size:14px">say_when_git_ops</span> patches. EKS 1.31 leaves extended support on Nov 26, 2026, so the cluster should be on 1.35 first.</li>
+      <li><strong>Done:</strong> merge the pending <span style="font-family:var(--mono);font-size:14px">say_when_infra</span> and <span style="font-family:var(--mono);font-size:14px">say_when_git_ops</span> patches. The cluster is on EKS 1.35, ahead of 1.31 leaving extended support on Nov 26, 2026.</li>
       <li>Take the photos now while the leaves are still down: a good and a "wrong" shot for each of the 10 chores. They become the test set for every later part.</li>
       <li>Photograph every snowfall from December through February: shoveled, unshoveled, salted, and a few wrong shots. Winter is built from these.</li>
       <li>Start registering a phone number for texts with AWS during the winter. Approval can take weeks, and Winter #5 needs it.</li>
@@ -216,16 +216,16 @@ const COMPONENTS=[
  {name:"Popeye", status:"wip", area:"GitOps", note:"Before and after health score", lands:[["fall",0,"Popeye baseline"],["fall",10,"Popeye after"]]},
  {name:"Budgets + Cost Anomaly Detection", status:"ok", area:"AWS", note:"Cost alerts before anything is built", lands:[["fall",0]]},
  {name:"Cleanup app", status:"ok", area:"App", note:"say_when_app repo: v1 Fall, v2 Winter, v3 Spring", lands:[["fall",1,"Fall cleanup app (skeleton)"],["fall",6,"Fall cleanup app (checker)"],["fall",9,"Fall cleanup app (dispatcher)"],["fall",10,"Fall cleanup app v1"],["winter",1,"App v2: winter chores"],["winter",7,"App v2 complete"],["spring",1,"App v3: spring chores"],["spring",5,"App v3 complete"]]},
- {name:"ECR + Popeye build script", status:"wip", area:"Infra", note:"Reuse for the app image", lands:[["fall",1,"ECR + build script"]]},
+ {name:"ECR + Popeye build script", status:"ok", area:"Infra", note:"Reuse for the app image", lands:[["fall",1,"ECR + build script"]]},
  {name:"GitHub Actions CI", status:"ok", area:"Infra", note:"Add app build, scan, sign and push", lands:[["fall",1]]},
  {name:"Argo CD", status:"ok", area:"GitOps", note:"New lab-app project, chores changed through Git", lands:[["fall",2],["winter",1]]},
  {name:"Envoy Gateway", status:"wip", area:"GitOps", note:"Routes, then HTTPS and rate limiting", lands:[["fall",2,"Envoy Gateway (routes)"],["fall",4,"Envoy Gateway (HTTPS, rate limit)"]]},
  {name:"gp3 storage + namespaces", status:"ok", area:"GitOps", note:"Already backing the monitoring stack", lands:[["fall",2]]},
- {name:"Kyverno", status:"wip", area:"GitOps", note:"Add a signed-images-only policy", lands:[["fall",3,"Kyverno signed-image policy"]]},
- {name:"Network policies", status:"wip", area:"GitOps", note:"Default-deny rules for the app namespace", lands:[["fall",3]]},
- {name:"External Secrets", status:"wip", area:"GitOps", note:"App settings from Secrets Manager", lands:[["fall",3]]},
- {name:"Pod Identity", status:"wip", area:"Infra", note:"New association for the app", lands:[["fall",3]]},
- {name:"Secrets Manager", status:"wip", area:"Infra", note:"New app settings secret", lands:[["fall",3]]},
+ {name:"Kyverno", status:"ok", area:"GitOps", note:"Add a signed-images-only policy", lands:[["fall",3,"Kyverno signed-image policy"]]},
+ {name:"Network policies", status:"ok", area:"GitOps", note:"Default-deny rules for the app namespace", lands:[["fall",3]]},
+ {name:"External Secrets", status:"ok", area:"GitOps", note:"App settings from Secrets Manager", lands:[["fall",3]]},
+ {name:"Pod Identity", status:"ok", area:"Infra", note:"New association for the app", lands:[["fall",3]]},
+ {name:"Secrets Manager", status:"ok", area:"Infra", note:"New app settings secret", lands:[["fall",3]]},
  {name:"Route 53 + ACM", status:"new", area:"AWS", note:"Subdomain and HTTPS certificate", lands:[["fall",4]]},
  {name:"Load Balancer Controller + NLB", status:"new", area:"AWS", note:"Let phones reach Envoy Gateway", lands:[["fall",4]]},
  {name:"S3 photos bucket", status:"new", area:"AWS", note:"Uploads with a 30-day lifecycle", lands:[["fall",5]]},
