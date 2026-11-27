@@ -24,7 +24,7 @@ Chores go out, photos come back, AWS AI judges them, and a Grafana board turns e
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
-pytest -q                                   # 5 passed
+pytest -q                                   # 14 passed
 python -m uvicorn app.main:app --port 8080  # then open http://localhost:8080/docs
 ```
 
@@ -34,6 +34,42 @@ Or in a container:
 docker build --build-arg APP_VERSION=local-test -t say-when-app:local .
 docker run --rm -p 8080:8080 say-when-app:local
 ```
+
+## Endpoints
+
+| Path | What it does | Public through the gateway? |
+| --- | --- | --- |
+| `/healthz` | Liveness/readiness check | ✅ |
+| `/version` | Image version (`APP_VERSION` build arg) | ✅ |
+| `/chores`, `/chores/{id}` | The chore list and each chore's photo rules | ✅ |
+| `/docs`, `/openapi.json` | FastAPI's interactive docs | ✅ |
+| `/metrics` | Prometheus counters | ❌ scraped from the Service directly |
+| `/admin/status` | Confirms the app received its secret. Needs the `X-Admin-Token` header. | ❌ in-cluster only |
+
+## Admin token
+
+`/admin/status` is protected by a token that never lives in Git, the image or Terraform state:
+
+```mermaid
+flowchart LR
+    TF["say_when_infra<br/>app-secrets.tf<br/>(ephemeral, write-only)"] --> SM["Secrets Manager<br/>say-when/app/settings"]
+    SM --> ESO["External Secrets<br/>(Pod Identity, refresh 1m)"]
+    ESO --> KS["K8s Secret<br/>say-when-app-settings"]
+    KS --> File["/etc/say-when/secrets/admin_token<br/>(read-only mount)"]
+    File --> App["say-when-app"]
+```
+
+- The app reads the token file **on every request**, so a rotated secret takes effect without a restart.
+- **Fail closed:** no file or an empty file returns `503`; a missing or wrong header returns `401`. The token is compared in constant time (`hmac.compare_digest`).
+- Override the path with `ADMIN_TOKEN_FILE`. Try it locally:
+
+```bash
+echo -n local-token > /tmp/admin_token
+ADMIN_TOKEN_FILE=/tmp/admin_token python -m uvicorn app.main:app --port 8080
+curl -H 'X-Admin-Token: local-token' http://localhost:8080/admin/status
+```
+
+To rotate it in the cluster, bump `secret_string_wo_version` in `say_when_infra/app-secrets.tf` and apply. External Secrets picks up the new value within about a minute.
 
 ## How images are built
 
@@ -48,6 +84,10 @@ Every push to `main` runs [`.github/workflows/build.yaml`](.github/workflows/bui
 7. **Verify**: the signature is checked before the job finishes
 
 Pull requests run steps 1–3 only and never get AWS access.
+
+The OIDC role and the ECR repo come from `say_when_infra/bootstrap/github-actions`. The role trusts only this repo's `main` branch, matched by GitHub's immutable owner and repo IDs.
+
+In the cluster, a Kyverno `ImageValidatingPolicy` in [say_when_git_ops](https://github.com/earpjennings37/say_when_git_ops) runs the same check as `cosign verify` below at admission, in **Deny** mode: a pod in `say-when` whose image isn't signed by this workflow on `main` is rejected.
 
 Verify any image yourself:
 
